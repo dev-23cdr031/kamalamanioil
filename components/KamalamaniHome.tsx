@@ -526,7 +526,7 @@ export function KamalamaniHome() {
 
               <div className="relative z-10 mx-auto grid w-full max-w-[1480px] items-center gap-8 px-5 pb-16 pt-20 md:px-10 lg:grid-cols-[1.15fr_.85fr]">
                 <div>
-                  <div className="mb-7 flex items-center gap-3 text-[10px] font-bold uppercase tracking-[.34em] text-[#e7c775]"><span className="h-px w-12 bg-[#d7aa4f]" /> Rooted in purity since 1986</div>
+                  <div className="mb-7 flex items-center gap-3 text-[10px] font-bold uppercase tracking-[.34em] text-[#e7c775]"><span className="h-px w-12 bg-[#d7aa4f]" /> Rooted in purity since 1962</div>
                   <h1 className="font-display max-w-5xl text-[clamp(3.5rem,7.4vw,8rem)] leading-[.82] tracking-[-.035em]">
                     <span className="hero-word inline-block">Pureness</span>{' '}
                     <span className="hero-word gold-text inline-block">from nature.</span><br />
