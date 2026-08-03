@@ -129,7 +129,7 @@ function AvatarImage({ testimonial, large = false }: { testimonial: (typeof test
 
 function TestimonialFocusImage({ testimonial }: { testimonial: (typeof testimonials)[number] }) {
   return (
-    <div className="relative h-40 w-full overflow-hidden rounded-[1.5rem] border border-[#e5bd64]/50 bg-[#092019] shadow-[0_30px_90px_rgba(0,0,0,.35)] md:h-[360px]">
+    <div className="relative h-[360px] w-full overflow-hidden rounded-[1.5rem] border border-[#e5bd64]/50 bg-[#092019] shadow-[0_30px_90px_rgba(0,0,0,.35)]">
       <Image
         src={testimonial.image}
         alt={`${testimonial.name} customer photo`}
