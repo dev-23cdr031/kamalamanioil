@@ -129,7 +129,7 @@ function AvatarImage({ testimonial, large = false }: { testimonial: (typeof test
 
 function TestimonialFocusImage({ testimonial }: { testimonial: (typeof testimonials)[number] }) {
   return (
-    <div className="relative h-[360px] w-full overflow-hidden rounded-[1.5rem] border border-[#e5bd64]/50 bg-[#092019] shadow-[0_30px_90px_rgba(0,0,0,.35)]">
+    <div className="relative h-40 w-full overflow-hidden rounded-[1.5rem] border border-[#e5bd64]/50 bg-[#092019] shadow-[0_30px_90px_rgba(0,0,0,.35)] md:h-[360px]">
       <Image
         src={testimonial.image}
         alt={`${testimonial.name} customer photo`}
@@ -364,7 +364,6 @@ function ProductCard({ product, index, onOpen }: { product: (typeof products)[nu
         lightY.set(py * 100)
       }}
       onMouseLeave={() => { rotateX.set(0); rotateY.set(0); lightX.set(50); lightY.set(35) }}
-      onClick={onOpen}
       className="product-card group relative flex min-h-[660px] cursor-pointer flex-col overflow-hidden rounded-[2rem] border border-[#e8c873]/18 bg-[#0b291d] shadow-[0_35px_90px_rgba(0,0,0,.28)] transition-[border-color,box-shadow] duration-500 hover:border-[#f0cc70]/55 hover:shadow-[0_42px_100px_rgba(0,0,0,.34),0_0_42px_rgba(215,170,79,.16)]"
     >
       <motion.div
@@ -393,7 +392,7 @@ function ProductCard({ product, index, onOpen }: { product: (typeof products)[nu
         <div className="mt-5 flex flex-wrap gap-2">
           {product.features.map((feature) => <span key={feature} className="rounded-full border border-white/12 bg-white/[.035] px-3 py-2 text-[8px] uppercase tracking-[.12em] text-white/62">{feature}</span>)}
         </div>
-        <button className="mt-6 flex w-full items-center justify-between rounded-full bg-[#d7aa4f] px-5 py-3 text-[9px] font-bold uppercase tracking-[.2em] text-[#071a13] transition duration-300 group-hover:px-7">View details <ArrowUpRight className="h-4 w-4" /></button>
+        <button type="button" onClick={onOpen} className="mt-6 flex w-full items-center justify-between rounded-full bg-[#d7aa4f] px-5 py-3 text-[9px] font-bold uppercase tracking-[.2em] text-[#071a13] transition duration-300 active:scale-[.98] md:group-hover:px-7">View details <ArrowUpRight className="h-4 w-4" /></button>
       </div>
       {Array.from({ length: 7 }, (_, i) => <motion.i key={i} className="absolute h-1 w-1 rounded-full bg-[#f0cc70]" style={{ left: `${18 + (i * 13) % 68}%`, top: `${16 + (i * 17) % 60}%` }} animate={{ y: [8, -20, 8], opacity: [.1, .75, .1] }} transition={{ duration: 3.5 + i * .3, repeat: Infinity, delay: i * .25 }} />)}
     </motion.article>
@@ -506,6 +505,24 @@ export function KamalamaniHome() {
     window.addEventListener('mousemove', move)
     return () => window.removeEventListener('mousemove', move)
   }, [cursorX, cursorY])
+
+  useEffect(() => {
+    if (!selectedProduct && !selectedTestimonial) return
+
+    const originalOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      setSelectedProduct(null)
+      setSelectedTestimonial(null)
+    }
+    window.addEventListener('keydown', closeOnEscape)
+
+    return () => {
+      document.body.style.overflow = originalOverflow
+      window.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [selectedProduct, selectedTestimonial])
 
   return (
     <>
@@ -893,13 +910,13 @@ export function KamalamaniHome() {
 
           <AnimatePresence>
             {selectedProduct && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedProduct(null)} className="fixed inset-0 z-[80] grid place-items-start overflow-y-auto bg-[#020805]/90 p-4 pt-[max(1rem,env(safe-area-inset-top))] backdrop-blur-xl md:place-items-center md:p-8">
-                <button aria-label="Close product spotlight" onClick={() => setSelectedProduct(null)} className="fixed right-[max(1rem,env(safe-area-inset-right))] top-[max(1rem,env(safe-area-inset-top))] z-[90] grid h-12 w-12 place-items-center rounded-full border border-white/15 bg-[#071a13]/95 text-white/80 shadow-[0_8px_28px_rgba(0,0,0,.45)] transition hover:bg-[#d7aa4f] hover:text-[#071a13] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5d885] md:hidden"><X className="h-5 w-5" /></button>
-                <motion.div initial={{ y: 70, scale: .94, opacity: 0 }} animate={{ y: 0, scale: 1, opacity: 1 }} exit={{ y: 40, scale: .97, opacity: 0 }} transition={{ type: 'spring', stiffness: 170, damping: 22 }} onClick={(event) => event.stopPropagation()} className="relative grid w-full max-w-6xl overflow-hidden rounded-[2.5rem] border border-[#e0b655]/20 bg-[#092219] shadow-[0_50px_160px_rgba(0,0,0,.65)] lg:grid-cols-2">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={(event) => { if (event.target === event.currentTarget) setSelectedProduct(null) }} className="fixed inset-0 z-[80] grid place-items-start overflow-y-auto bg-[#020805]/90 p-4 pt-[max(5rem,calc(env(safe-area-inset-top)+4rem))] backdrop-blur-xl md:place-items-center md:p-8">
+                <button type="button" aria-label="Close product spotlight" onClick={() => setSelectedProduct(null)} className="fixed right-[max(1rem,env(safe-area-inset-right))] top-[max(1rem,env(safe-area-inset-top))] z-[90] grid h-12 w-12 place-items-center rounded-full border border-white/15 bg-[#071a13]/95 text-white/80 shadow-[0_8px_28px_rgba(0,0,0,.45)] transition hover:bg-[#d7aa4f] hover:text-[#071a13] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5d885] md:hidden"><X className="h-5 w-5" /></button>
+                <motion.div initial={{ y: 28, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }} transition={{ duration: .24, ease: 'easeOut' }} className="relative grid w-full max-w-6xl overflow-hidden rounded-[2rem] border border-[#e0b655]/20 bg-[#092219] shadow-[0_50px_160px_rgba(0,0,0,.65)] md:rounded-[2.5rem] lg:grid-cols-2">
                   <button aria-label="Close product spotlight" onClick={() => setSelectedProduct(null)} className="absolute right-5 top-5 z-20 hidden h-11 w-11 place-items-center rounded-full border border-white/15 bg-black/20 text-white/70 transition hover:bg-[#d7aa4f] hover:text-[#071a13] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5d885] md:grid"><X className="h-5 w-5" /></button>
-                  <div className="relative min-h-[480px] overflow-hidden bg-[radial-gradient(circle_at_50%_40%,rgba(231,185,73,.28),transparent_55%)] md:min-h-[650px]">
+                  <div className="relative min-h-[320px] overflow-hidden bg-[radial-gradient(circle_at_50%_40%,rgba(231,185,73,.28),transparent_55%)] md:min-h-[650px]">
                     <div className="absolute inset-x-[15%] bottom-14 h-12 rounded-[50%] bg-black/45 blur-xl" />
-                    <motion.div initial={{ scale: .78, y: 60 }} animate={{ scale: 1, y: 0 }} transition={{ duration: .85, ease: [0.2, .8, .2, 1] }} className="absolute inset-10">
+                    <motion.div initial={{ scale: .94, y: 16 }} animate={{ scale: 1, y: 0 }} transition={{ duration: .32, ease: 'easeOut' }} className="absolute inset-8 md:inset-10">
                       <Image src={selectedProduct.image} alt={selectedProduct.name} fill sizes="50vw" className="object-contain drop-shadow-[0_45px_35px_rgba(0,0,0,.5)]" priority />
                     </motion.div>
                   </div>
@@ -918,23 +935,23 @@ export function KamalamaniHome() {
               </motion.div>
             )}
             {selectedTestimonial && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedTestimonial(null)} className="fixed inset-0 z-[85] grid place-items-center overflow-y-auto bg-[#020805]/92 p-4 backdrop-blur-2xl md:p-8">
-                <motion.div initial={{ y: 80, scale: .9, opacity: 0, filter: 'blur(14px)' }} animate={{ y: 0, scale: 1, opacity: 1, filter: 'blur(0px)' }} exit={{ y: 40, scale: .96, opacity: 0, filter: 'blur(10px)' }} transition={{ type: 'spring', stiffness: 160, damping: 22 }} onClick={(event) => event.stopPropagation()} className="relative w-full max-w-5xl overflow-hidden rounded-[2rem] border border-[#e0b655]/25 bg-[#071a13] shadow-[0_50px_160px_rgba(0,0,0,.72)]">
-                  <button aria-label="Close testimonial spotlight" onClick={() => setSelectedTestimonial(null)} className="absolute right-5 top-5 z-20 grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-black/25 text-white/70 transition hover:bg-[#d7aa4f] hover:text-[#071a13]"><X className="h-5 w-5" /></button>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={(event) => { if (event.target === event.currentTarget) setSelectedTestimonial(null) }} className="fixed inset-0 z-[85] grid place-items-start overflow-y-auto bg-[#020805]/92 p-4 pt-[max(4.5rem,calc(env(safe-area-inset-top)+3.5rem))] backdrop-blur-2xl md:place-items-center md:p-8">
+                <button type="button" aria-label="Close testimonial spotlight" onClick={() => setSelectedTestimonial(null)} className="fixed right-[max(1rem,env(safe-area-inset-right))] top-[max(1rem,env(safe-area-inset-top))] z-[90] grid h-12 w-12 place-items-center rounded-full border border-white/15 bg-[#071a13]/95 text-white/80 shadow-[0_8px_28px_rgba(0,0,0,.45)] transition hover:bg-[#d7aa4f] hover:text-[#071a13] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5d885]"><X className="h-5 w-5" /></button>
+                <motion.div initial={{ y: 28, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }} transition={{ duration: .24, ease: 'easeOut' }} className="relative w-full max-w-5xl overflow-hidden rounded-[2rem] border border-[#e0b655]/25 bg-[#071a13] shadow-[0_50px_160px_rgba(0,0,0,.72)]">
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(215,170,79,.28),transparent_38%),linear-gradient(135deg,rgba(255,255,255,.08),rgba(255,255,255,.02))]" />
-                  <div className="relative grid gap-8 p-8 md:p-12 lg:grid-cols-[.65fr_1.35fr] lg:items-center">
+                  <div className="relative grid gap-5 p-5 md:gap-8 md:p-12 lg:grid-cols-[.65fr_1.35fr] lg:items-center">
                     <div className="flex flex-col items-center text-center">
                       <TestimonialFocusImage testimonial={selectedTestimonial} />
-                      <div className="mt-6 text-[10px] uppercase tracking-[.3em] text-[#d7aa4f]">Verified customer voice</div>
-                      <h2 className="mt-4 font-display text-4xl leading-none text-[#f5e8c5] md:text-5xl">{selectedTestimonial.name}</h2>
-                      <p className="mt-3 text-xs uppercase tracking-[.18em] text-white/42">{selectedTestimonial.city}</p>
+                      <div className="mt-4 text-[9px] uppercase tracking-[.3em] text-[#d7aa4f] md:mt-6 md:text-[10px]">Verified customer voice</div>
+                      <h2 className="mt-3 font-display text-3xl leading-none text-[#f5e8c5] md:mt-4 md:text-5xl">{selectedTestimonial.name}</h2>
+                      <p className="mt-2 text-[10px] uppercase tracking-[.18em] text-white/42 md:mt-3 md:text-xs">{selectedTestimonial.city}</p>
                       <div className="mt-5 text-2xl text-[#e5bd64]">★★★★★</div>
                     </div>
                     <div>
-                      <Quote className="h-10 w-10 text-[#d7aa4f]" />
-                      <p className="mt-7 font-display text-3xl leading-[1.35] text-[#fff4d2] md:text-5xl">"{selectedTestimonial.review}"</p>
-                      <div className="mt-9 h-px w-full bg-gradient-to-r from-[#d7aa4f] via-white/20 to-transparent" />
-                      <p className="mt-6 max-w-xl text-sm leading-7 text-white/52">This review reflects the trust Kamalamani Oil Mills aims to earn with every bottle: purity, consistency, and service that customers feel confident recommending.</p>
+                      <Quote className="h-7 w-7 text-[#d7aa4f] md:h-10 md:w-10" />
+                      <p className="mt-3 font-display text-2xl leading-[1.35] text-[#fff4d2] md:mt-7 md:text-5xl">"{selectedTestimonial.review}"</p>
+                      <div className="mt-5 h-px w-full bg-gradient-to-r from-[#d7aa4f] via-white/20 to-transparent md:mt-9" />
+                      <p className="mt-6 hidden max-w-xl text-sm leading-7 text-white/52 md:block">This review reflects the trust Kamalamani Oil Mills aims to earn with every bottle: purity, consistency, and service that customers feel confident recommending.</p>
                     </div>
                   </div>
                 </motion.div>
